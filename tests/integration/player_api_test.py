@@ -12,7 +12,7 @@ class TestPlayerApi:
 
         assert response.status_code == HTTPStatus.OK
         response_json = response.json()
-        assert response_json == {}
+        assert response_json['player'] is None
 
     def test_create_player_successful(self):
         username = f'test_creation_{str(time.time())}'
@@ -22,17 +22,19 @@ class TestPlayerApi:
         assert response.status_code == HTTPStatus.OK
 
         response_json = response.json()
-        assert response_json['points'] == 0
-        assert response_json['coins'] == 0
-        assert response_json['spins'] == 100
-        assert response_json['current_mission_index'] == 1
-        assert response_json['accumulated_points_towards_goal'] == 0
+        player_json = response_json['player']
+        assert player_json['points'] == 0
+        assert player_json['coins'] == 0
+        assert player_json['spins'] == 100
+        assert player_json['current_mission_index'] == 1
+        assert player_json['accumulated_points_towards_goal'] == 0
 
         get_response = ApiTestTools.get_player(username)
 
         assert get_response.status_code == HTTPStatus.OK
         get_response_json = get_response.json()
-        assert get_response_json['username'] == username
+        assert get_response_json['player'] is not None
+        assert get_response_json['player']['username'] == username
 
     def test_create_player_with_invalid_name_fails(self):
         too_short = 'a'

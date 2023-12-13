@@ -55,6 +55,9 @@ To run tests:
 * Locate the tests directory and run required tests. Please note that integration tests
 execution requires having the service started and a Redis DB available. Integration tests WILL write additional data to the Redis DB used by the service
 
+After running the service you can browse to the FastAPI openapi.json file to view the exact API documentation
+for example here: [http://localhost:8000/docs](http://localhost:8000/docs)
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->

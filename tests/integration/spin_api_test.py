@@ -12,7 +12,7 @@ class TestApinApi:
         get_response = ApiTestTools.get_player(username)
         assert get_response.status_code == HTTPStatus.OK
         get_response_json = get_response.json()
-        current_spins = get_response_json['spins']
+        current_spins = get_response_json['player']['spins']
 
         spin_response = ApiTestTools.spin(username)
 

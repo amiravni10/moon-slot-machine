@@ -4,8 +4,8 @@ from http import HTTPStatus
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 
-from api.player_api import CreatePlayerRequest
-from api.spin_api import SpinRequest
+from api.player_api import CreatePlayerRequest, PlayerResponse
+from api.spin_api import SpinRequest, SpinResponse
 from managers.config_manager import ConfigManager
 from managers.db_manager import DbManager
 from managers.player_manager import PlayerManager
@@ -30,27 +30,27 @@ def validate_username(username: str):
 
 
 @app.get("/player/{username}")
-async def get_player(username: str, session: Session = Depends(SessionManager.get_session)):
+async def get_player(username: str, session: Session = Depends(SessionManager.get_session)) -> PlayerResponse:
     validate_username(username)
     player = await PlayerRepository.get_player(session, username)
-    if not player:
-        return {}
-    return player
+    response = PlayerResponse()
+    response.player = player
+    return response
 
 
 @app.post("/player")
 async def create_player(create_player_request: CreatePlayerRequest,
-                        session: Session = Depends(SessionManager.get_session)):
+                        session: Session = Depends(SessionManager.get_session)) -> PlayerResponse:
     validate_username(create_player_request.username)
     try:
         created_player = await PlayerRepository.create_player(session, create_player_request.username)
     except PlayerAlreadyExistsException:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail='Username already exists')
-    return created_player
+    return PlayerResponse(player=created_player)
 
 
 @app.post('/spin')
-async def spin(spin_request: SpinRequest, session: Session = Depends(SessionManager.get_session)):
+async def spin(spin_request: SpinRequest, session: Session = Depends(SessionManager.get_session)) -> SpinResponse:
     validate_username(spin_request.username)
     try:
         spin_result = await SpinManager.spin(session, spin_request)
